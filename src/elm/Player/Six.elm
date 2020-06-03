@@ -1,4 +1,4 @@
-module Player exposing (takeTurn)
+module Player.Six exposing (takeTurn)
 
 import Warrior.Direction as Direction
 import Warrior.Map as Map exposing (Map)

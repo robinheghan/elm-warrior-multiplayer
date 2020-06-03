@@ -1,6 +1,13 @@
 module Main exposing (main)
 
-import Player
+import Player.Eight
+import Player.Five
+import Player.Four
+import Player.One
+import Player.Seven
+import Player.Six
+import Player.Three
+import Player.Two
 import Warrior
 import Warrior.Item as Item
 import Warrior.Map as Map exposing (Map)
@@ -11,14 +18,14 @@ main =
     Warrior.multiplayerProgram
         { maps = [ deathmatch ]
         , players =
-            [ ( "One", Player.takeTurn )
-            , ( "Two", Player.takeTurn )
-            , ( "Three", Player.takeTurn )
-            , ( "Four", Player.takeTurn )
-            , ( "Five", Player.takeTurn )
-            , ( "Six", Player.takeTurn )
-            , ( "Seven", Player.takeTurn )
-            , ( "Eight", Player.takeTurn )
+            [ ( "One", Player.One.takeTurn )
+            , ( "Two", Player.Two.takeTurn )
+            , ( "Three", Player.Three.takeTurn )
+            , ( "Four", Player.Four.takeTurn )
+            , ( "Five", Player.Five.takeTurn )
+            , ( "Six", Player.Six.takeTurn )
+            , ( "Seven", Player.Seven.takeTurn )
+            , ( "Eight", Player.Eight.takeTurn )
             ]
         , msPerTurn = 1000
         , winCondition = \players _ -> List.length players == 1
