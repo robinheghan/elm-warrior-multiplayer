@@ -238,7 +238,7 @@ takeTurn player map =
             case Warrior.Map.lookDown player map of
                 Warrior.Map.Item _ ->
                     Just Player.Pickup
-                    
+
                 _ ->
                     Nothing
 
@@ -284,20 +284,9 @@ takeTurn player map =
 
         runAwayAny =
             if lowHealth && anyEnemyNextToUs then
-                Player.previousActions player
-                    |> List.filterMap
-                        (\( _, action ) ->
-                            case action of
-                                Player.Move dir ->
-                                    if noEnemiesClose (nextCoordinate playerPosition (oppositeDirection dir)) (Direction.all |> List.filter ((/=) dir)) then
-                                        Just (Player.Move (oppositeDirection dir))
-
-                                    else
-                                        Nothing
-
-                                _ ->
-                                    Nothing
-                        )
+                Direction.all 
+                    |> List.filter (\dir -> noEnemiesClose (nextCoordinate playerPosition dir) (Direction.all |> List.filter ((/=) (oppositeDirection dir))))
+                    |> List.map (\dir -> Player.Move dir)
                     |> List.head
 
             else
