@@ -18,14 +18,14 @@ main =
     Warrior.multiplayerProgram
         { maps = [ deathmatch ]
         , players =
-            [ ( "One", Player.One.takeTurn )
-            , ( "Two", Player.Two.takeTurn )
-            , ( "Three", Player.Three.takeTurn )
-            , ( "Four", Player.Four.takeTurn )
-            , ( "Five", Player.Five.takeTurn )
-            , ( "Six", Player.Six.takeTurn )
-            , ( "Seven", Player.Seven.takeTurn )
-            , ( "Eight", Player.Eight.takeTurn )
+            [ ( "Robin", Player.One.takeTurn )
+            , ( "Tarjei", Player.Two.takeTurn )
+            , ( "Bjørn-Ivar", Player.Three.takeTurn )
+            , ( "Knut Erik", Player.Four.takeTurn )
+            , ( "Mathilde", Player.Five.takeTurn )
+            , ( "Aksel", Player.Six.takeTurn )
+            , ( "Øyvind", Player.Seven.takeTurn )
+            , ( "Rahil", Player.Eight.takeTurn )
             ]
         , msPerTurn = 1000
         , winCondition = \players _ -> List.length players == 1
