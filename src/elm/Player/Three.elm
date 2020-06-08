@@ -1,8 +1,19 @@
 module Player.Three exposing (takeTurn)
 
+import Html.Attributes exposing (dir)
 import Warrior.Direction as Direction
-import Warrior.Map as Map exposing (Map)
+import Warrior.Map as Map exposing (..)
 import Warrior.Player as Player exposing (Action(..), Player)
+
+
+shouldMoveOntoTile : Tile -> Bool
+shouldMoveOntoTile tile =
+    case tile of
+        Item _ ->
+            True
+
+        _ ->
+            False
 
 
 takeTurn : Player -> Map -> Action
@@ -22,6 +33,21 @@ takeTurn player map =
                 |> List.head
                 |> Maybe.map ((==) Map.Player)
                 |> Maybe.withDefault False
+
+        wantToMoveTo direction =
+            Map.look direction currentPosition map
+                |> List.filter shouldMoveOntoTile
+                |> List.head
+                |> Maybe.map canMoveOntoTile
+                |> Maybe.withDefault False
+
+        canPickup foo =
+            case Map.lookDown foo map of
+                Item _ ->
+                    True
+
+                _ ->
+                    False
 
         lastAction =
             Player.previousActions player
@@ -50,11 +76,15 @@ takeTurn player map =
             if canAttack dir then
                 Attack dir
 
+            else if canPickup player then
+                Pickup
+
             else
                 Move dir
     in
     Direction.all
         |> List.filter canMoveTo
+        |> List.filter wantToMoveTo
         |> List.filter (not << wouldUndoLastMove)
         |> List.head
         |> Maybe.map preferredAction
