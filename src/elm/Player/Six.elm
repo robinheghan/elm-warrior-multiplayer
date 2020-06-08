@@ -2,6 +2,7 @@ module Player.Six exposing (takeTurn)
 
 import Warrior.Coordinate exposing (Coordinate)
 import Warrior.Direction exposing (Direction(..))
+import Warrior.Item exposing (Item(..))
 import Warrior.Map as Map exposing (Map, Tile(..))
 import Warrior.Player as Player exposing (Action(..), Player)
 
@@ -23,6 +24,9 @@ takeTurn player map =
                 |> directionOfLastPosition
                 |> Move
 
+        else if doesNotHaveSword player && onSwordTile player map then
+            Pickup
+
         else
             Attack direction
 
@@ -41,6 +45,24 @@ takeTurn player map =
                 Move direction
 
 
+onSwordTile : Player -> Map -> Bool
+onSwordTile player map =
+    case Map.lookDown player map of
+        Item Sword ->
+            True
+
+        _ ->
+            False
+
+
+doesNotHaveSword : Player -> Bool
+doesNotHaveSword player =
+    player
+        |> Player.inventory
+        |> List.member Sword
+        |> not
+
+
 shouldRetreatToHeal : Player -> Bool
 shouldRetreatToHeal player =
     if Player.health player == Player.maxHealth player then
@@ -51,7 +73,8 @@ shouldRetreatToHeal player =
             ( lastPlayerState, _ ) :: _ ->
                 let
                     enemyAttackPower =
-                        Player.health lastPlayerState - Player.health player
+                        --Player.health lastPlayerState - Player.health player
+                        3
                 in
                 Player.health player - enemyAttackPower < 1
 
@@ -230,14 +253,49 @@ isGoal tile =
 
 moveToNewSquare : Player -> Map -> Direction
 moveToNewSquare player map =
+    let
+        _ =
+            2
+    in
+    if List.length (Player.previousActions player) == 0 then
+        Up
+
+    else if hasOnlyMovedUp player then
+        Down
+
+    else
+        player
+            |> previousDirection
+            |> Maybe.withDefault Right
+            |> allDirectionsClockwiseFromStartingDirection
+            |> List.filter (unvisited player)
+            |> List.filter (canMoveInDirection player map)
+            |> List.head
+            |> Maybe.withDefault (moveAimlessly player map)
+
+
+hasOnlyMovedUp : Player -> Bool
+hasOnlyMovedUp player =
     player
-        |> previousDirection
-        |> Maybe.withDefault Right
-        |> allDirectionsClockwiseFromStartingDirection
-        |> List.filter (unvisited player)
-        |> List.filter (canMoveInDirection player map)
-        |> List.head
-        |> Maybe.withDefault (moveAimlessly player map)
+        |> Player.previousActions
+        |> List.map Tuple.second
+        |> onlyIncludesUpwardMoves
+
+
+onlyIncludesUpwardMoves : List Action -> Bool
+onlyIncludesUpwardMoves actions =
+    case actions of
+        (Move Up) :: rest ->
+            onlyIncludesUpwardMoves rest
+
+        (Move _) :: rest ->
+            False
+
+        _ :: rest ->
+            onlyIncludesUpwardMoves rest
+
+        [] ->
+            True
 
 
 canMoveInDirection : Player -> Map -> Direction -> Bool
