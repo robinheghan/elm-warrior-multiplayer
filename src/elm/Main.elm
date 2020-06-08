@@ -27,7 +27,7 @@ main =
             , ( "Øyvind", Player.Seven.takeTurn )
             , ( "Rahil", Player.Eight.takeTurn )
             ]
-        , msPerTurn = 1000
+        , msPerTurn = 500
         , winCondition = \players _ -> List.length players == 1
         }
 
