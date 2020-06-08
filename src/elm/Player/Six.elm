@@ -235,7 +235,45 @@ nextDirection player map =
             direction
 
         Nothing ->
-            moveToNewSquare player map
+            case directionOfItem player map of
+                Just direction ->
+                    direction
+
+                Nothing ->
+                    moveToNewSquare player map
+
+
+directionOfItem : Player -> Map -> Maybe Direction
+directionOfItem player map =
+    if isDirectionOfItem player map Right then
+        Just Right
+
+    else if isDirectionOfItem player map Down then
+        Just Down
+
+    else if isDirectionOfItem player map Left then
+        Just Left
+
+    else if isDirectionOfItem player map Up then
+        Just Up
+
+    else
+        Nothing
+
+
+isDirectionOfItem : Player -> Map -> Direction -> Bool
+isDirectionOfItem player map direction =
+    List.any isItem (Map.look direction (Player.position player) map)
+
+
+isItem : Tile -> Bool
+isItem tile =
+    case tile of
+        Item _ ->
+            True
+
+        _ ->
+            False
 
 
 directionOfGoal : Player -> Map -> Maybe Direction
