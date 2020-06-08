@@ -8,54 +8,91 @@ import Warrior.Player as Player exposing (Action(..), Player)
 takeTurn : Player -> Map -> Action
 takeTurn player map =
     let
-        currentPosition =
-            Player.position player
-
-        canMoveTo direction =
-            Map.look direction currentPosition map
-                |> List.head
-                |> Maybe.map Map.canMoveOntoTile
+        playerPosition =
+            player |> Player.position
+        canMove =
+            Map.look Direction.Right playerPosition map 
+                |> List.head 
+                |> Maybe.map ((==) Map.Empty)
                 |> Maybe.withDefault False
 
-        canAttack direction =
-            Map.look direction currentPosition map
+        canMoveRight =
+            Map.look Direction.Right playerPosition map 
+                |> List.head 
+                |> Maybe.map ((==) Map.Empty)
+                |> Maybe.withDefault False
+
+        canMoveLeft =
+            Map.look Direction.Left playerPosition map 
+                |> List.head 
+                |> Maybe.map ((==) Map.Empty)
+                |> Maybe.withDefault False
+
+        canMoveUp =
+            Map.look Direction.Up playerPosition map 
+                |> List.head 
+                |> Maybe.map ((==) Map.Empty)
+                |> Maybe.withDefault False
+        canMoveDown =
+            Map.look Direction.Down playerPosition map 
+                |> List.head 
+                |> Maybe.map ((==) Map.Empty)
+                |> Maybe.withDefault False
+
+        canAttackRight =
+            Map.look Direction.Right playerPosition map
                 |> List.head
                 |> Maybe.map ((==) Map.Player)
                 |> Maybe.withDefault False
 
-        lastAction =
-            Player.previousActions player
-                |> List.head
-                |> Maybe.map Tuple.second
-                |> Maybe.withDefault Wait
-
-        wouldUndoLastMove dir =
-            case ( dir, lastAction ) of
-                ( Direction.Left, Move Direction.Right ) ->
-                    True
-
-                ( Direction.Right, Move Direction.Left ) ->
-                    True
-
-                ( Direction.Down, Move Direction.Up ) ->
-                    True
-
-                ( Direction.Up, Move Direction.Down ) ->
-                    True
-
-                _ ->
-                    False
-
-        preferredAction dir =
-            if canAttack dir then
-                Attack dir
-
-            else
-                Move dir
+        prevMove =
+                Player.previousActions player 
+                |> List.head 
+                |> Maybe.map Tuple.second 
+                |> Maybe.withDefault Player.Wait
+        
     in
-    Direction.all
-        |> List.filter canMoveTo
-        |> List.filter (not << wouldUndoLastMove)
-        |> List.head
-        |> Maybe.map preferredAction
-        |> Maybe.withDefault Wait
+    if (player |> Player.health) < 3 && canAttackRight then
+        Player.Move Direction.Left
+    else if (player |> Player.health) < 10 && canMove then
+        Player.Heal
+    else if canAttackRight then
+        Player.Attack Direction.Right
+    else if canMoveRight then     
+        if prevMove == Player.Move Direction.Right then
+            Player.Move Direction.Right
+        else if canMoveDown then
+            Player.Move Direction.Down
+        else if canMoveLeft then
+            Player.Move Direction.Left
+        else
+            Player.Move Direction.Up
+    else if canMoveUp then
+        if prevMove == Player.Move Direction.Up then
+            Player.Move Direction.Up
+        else if canMoveLeft then
+            Player.Move Direction.Left
+        else if canMoveDown then
+            Player.Move Direction.Down
+        else
+            Player.Move Direction.Right
+    else if canMoveLeft then
+        if prevMove == Player.Move Direction.Left then
+            Player.Move Direction.Left
+        else if canMoveUp then 
+            Player.Move Direction.Up
+        else if canMoveRight then
+            Player.Move Direction.Right
+        else
+            Player.Move Direction.Down
+    else if canMoveDown then
+        if prevMove == Player.Move Direction.Down then
+            Player.Move Direction.Down
+        else if canMoveRight then
+            Player.Move Direction.Right
+        else if canMoveLeft then
+            Player.Move Direction.Up
+        else
+            Player.Move Direction.Left
+    else
+        Player.Wait
