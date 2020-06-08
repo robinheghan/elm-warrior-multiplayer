@@ -16,33 +16,35 @@ takeTurn player map =
         _ =
             Debug.log "player health" (Player.health player)
     in
-    if isFacingVillain player map direction then
-        if shouldRetreatToHeal player then
-            player
-                |> Player.previousActions
-                |> List.map Tuple.second
-                |> directionOfLastPosition
-                |> Move
+    case isNextToVillain player map of
+        Just enemyDirection ->
+            if shouldRetreatToHeal player then
+                player
+                    |> Player.previousActions
+                    |> List.map Tuple.second
+                    |> directionOfLastPosition
+                    |> Move
 
-        else if doesNotHaveSword player && onSwordTile player map then
-            Pickup
+            else if doesNotHaveSword player && onSwordTile player map then
+                Pickup
 
-        else
-            Attack direction
+            else
+                Attack enemyDirection
 
-    else if Player.health player < Player.maxHealth player then
-        Heal
+        Nothing ->
+            if Player.health player < Player.maxHealth player then
+                Heal
 
-    else if onItemTile player map then
-        Pickup
+            else if onItemTile player map then
+                Pickup
 
-    else
-        case isInRetreat player of
-            Just { directionOfVillain } ->
-                Move directionOfVillain
+            else
+                case isInRetreat player of
+                    Just { directionOfVillain } ->
+                        Move directionOfVillain
 
-            Nothing ->
-                Move direction
+                    Nothing ->
+                        Move direction
 
 
 onSwordTile : Player -> Map -> Bool
@@ -80,6 +82,24 @@ shouldRetreatToHeal player =
 
             _ ->
                 False
+
+
+isNextToVillain : Player -> Map -> Maybe Direction
+isNextToVillain player map =
+    if isFacingVillain player map Right then
+        Just Right
+
+    else if isFacingVillain player map Down then
+        Just Down
+
+    else if isFacingVillain player map Left then
+        Just Left
+
+    else if isFacingVillain player map Up then
+        Just Up
+
+    else
+        Nothing
 
 
 isFacingVillain : Player -> Map -> Direction -> Bool
