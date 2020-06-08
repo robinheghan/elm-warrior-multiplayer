@@ -29,7 +29,7 @@ takeTurn player map =
     else if Player.health player < Player.maxHealth player then
         Heal
 
-    else if onItemTile player then
+    else if onItemTile player map then
         Pickup
 
     else
@@ -99,10 +99,14 @@ includesPosition previousActions coordinate =
         |> List.member coordinate
 
 
-onItemTile : Player -> Bool
-onItemTile player =
-    -- TODO: Implementer denne
-    False
+onItemTile : Player -> Map -> Bool
+onItemTile player map =
+    case Map.lookDown player map of
+        Item _ ->
+            True
+
+        _ ->
+            False
 
 
 nextMoveIsOppositeDirection : Direction -> List Action -> Bool
