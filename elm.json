@@ -6,7 +6,7 @@
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
-            "Skinney/elm-warrior": "3.1.2",
+            "Skinney/elm-warrior": "4.0.0",
             "elm/browser": "1.0.2",
             "elm/core": "1.0.4",
             "elm/html": "1.0.0",
@@ -17,6 +17,7 @@
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "elm/virtual-dom": "1.0.2",
+            "elm-community/dict-extra": "2.4.0",
             "elm-community/list-extra": "8.2.4",
             "tesk9/palette": "2.0.0"
         }
