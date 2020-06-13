@@ -1,32 +1,32 @@
 module Player.One exposing (takeTurn)
 
+import Warrior exposing (Action(..), Warrior)
 import Warrior.Direction as Direction
+import Warrior.History as History exposing (History)
 import Warrior.Map as Map exposing (Map)
-import Warrior.Player as Player exposing (Action(..), Player)
+import Warrior.Map.Tile as Tile
 
 
-takeTurn : Player -> Map -> Action
-takeTurn player map =
+takeTurn : Warrior -> Map -> History -> Action
+takeTurn warrior map history =
     let
-        currentPosition =
-            Player.position player
-
         canMoveTo direction =
-            Map.look direction currentPosition map
+            Map.look direction warrior map
                 |> List.head
-                |> Maybe.map Map.canMoveOntoTile
+                |> Maybe.map Tuple.second
+                |> Maybe.map Tile.canMoveOnto
                 |> Maybe.withDefault False
 
         canAttack direction =
-            Map.look direction currentPosition map
+            Map.look direction warrior map
                 |> List.head
-                |> Maybe.map ((==) Map.Player)
+                |> Maybe.map Tuple.second
+                |> Maybe.map Tile.isWarrior
                 |> Maybe.withDefault False
 
         lastAction =
-            Player.previousActions player
+            History.previousActions warrior history
                 |> List.head
-                |> Maybe.map Tuple.second
                 |> Maybe.withDefault Wait
 
         wouldUndoLastMove dir =
@@ -54,7 +54,7 @@ takeTurn player map =
                 Move dir
     in
     Direction.all
-        |> List.filter canMoveTo
+        |> List.filter (\dir -> canMoveTo dir || canAttack dir)
         |> List.filter (not << wouldUndoLastMove)
         |> List.head
         |> Maybe.map preferredAction

@@ -8,14 +8,15 @@ import Player.Seven
 import Player.Six
 import Player.Three
 import Player.Two
-import Warrior
 import Warrior.Item as Item
-import Warrior.Map as Map exposing (Map)
+import Warrior.Map.Builder as Map exposing (Template)
+import Warrior.Map.Progression as Progression
+import Warrior.Program as Warrior
 
 
 main : Program () Warrior.Model Warrior.Msg
 main =
-    Warrior.multiplayerProgram
+    Warrior.program
         { maps = [ deathmatch ]
         , players =
             [ ( "Robin", Player.One.takeTurn )
@@ -28,11 +29,11 @@ main =
             , ( "Rahil", Player.Eight.takeTurn )
             ]
         , msPerTurn = 500
-        , winCondition = \players _ -> List.length players == 1
+        , progressionFunction = Progression.lastWarriorStanding
         }
 
 
-deathmatch : Map
+deathmatch : Template
 deathmatch =
     Map.init { rows = 12, columns = 13 }
         |> Map.withWalledArea
