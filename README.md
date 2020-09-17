@@ -1,8 +1,8 @@
 # Elm Warrior Multiplayer Setup
 
-A multiplayer setup for the [elm-warrior](https://package.elm-lang.org/packages/Skinney/elm-warrior/latest/) game.
+A multiplayer setup for the [elm-warrior](https://package.elm-lang.org/packages/robinheghan/elm-warrior/latest/) game.
 
-![Multiplayer game in action](https://github.com/Skinney/elm-warrior-multiplayer/blob/master/screen.png?raw=true)
+![Multiplayer game in action](https://github.com/robinheghan/elm-warrior-multiplayer/blob/master/screen.png?raw=true)
 
 ## How to play
 
